@@ -1,103 +1,211 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import { geneticAlgorithm } from '@/lib/genetika/genetic_algorithm'
+import { Chromosome, Lokasi, Mahasiswa } from "@/lib/genetika/types"
+
+export default function PenempatanPage() {
+  const [mahasiswaList, setMahasiswaList] = useState<Mahasiswa[]>([])
+  const [lokasiList, setLokasiList] = useState<Lokasi[]>([])
+  const [hasil, setHasil] = useState<{ nama: string; lokasi: string }[] | null>(null)
+  const [error, setError] = useState('')
+
+  // Form states
+  const [namaMhs, setNamaMhs] = useState('')
+  const [jurusanMhs, setJurusanMhs] = useState('')
+  const [namaLokasi, setNamaLokasi] = useState('')
+  const [jurusanDiterima, setJurusanDiterima] = useState('')
+  const [kapasitas, setKapasitas] = useState('')
+
+  const tambahMahasiswa = () => {
+    if (!namaMhs || !jurusanMhs) return
+    setMahasiswaList(prev => [...prev, { nama: namaMhs, jurusan: jurusanMhs }])
+    setNamaMhs('')
+    setJurusanMhs('')
+  }
+
+  const tambahLokasi = () => {
+    if (!namaLokasi || !jurusanDiterima || !kapasitas) return
+    const jurusanArray = jurusanDiterima.split(',').map(j => j.trim())
+    const newId = lokasiList.length > 0 ? Math.max(...lokasiList.map(l => l.id)) + 1 : 1
+    setLokasiList(prev => [...prev, {
+      id: newId,
+      nama: namaLokasi,
+      jurusanDiterima: jurusanArray,
+      kapasitas: parseInt(kapasitas)
+    }])
+    setNamaLokasi('')
+    setJurusanDiterima('')
+    setKapasitas('')
+  }
+
+  const autoIsiDummy = () => {
+    const dummyMahasiswa: Mahasiswa[] = [
+      { nama: 'Budi Santoso', jurusan: 'Informatika' },
+      { nama: 'Siti Aminah', jurusan: 'Sistem Informasi' },
+      { nama: 'Rudi Hartono', jurusan: 'Teknik Elektro' },
+      { nama: 'Ayu Lestari', jurusan: 'Manajemen' },
+      { nama: 'Dewi Sartika', jurusan: 'Informatika' },
+      { nama: 'Andi Wijaya', jurusan: 'Akuntansi' },
+      { nama: 'Rina Agustin', jurusan: 'Teknik Industri' },
+      { nama: 'Bayu Pratama', jurusan: 'Teknik Sipil' },
+      { nama: 'Nina Putri', jurusan: 'Informatika' },
+      { nama: 'Fajar Nugroho', jurusan: 'Manajemen' },
+    ]
+
+    const dummyLokasi: Lokasi[] = [
+      {
+        id: 1,
+        nama: 'PT Teknologi Nusantara',
+        jurusanDiterima: ['Informatika', 'Sistem Informasi'],
+        kapasitas: 3
+      },
+      {
+        id: 2,
+        nama: 'Bank Nasional',
+        jurusanDiterima: ['Manajemen', 'Akuntansi'],
+        kapasitas: 2
+      },
+      {
+        id: 3,
+        nama: 'CV Konstruksi Jaya',
+        jurusanDiterima: ['Teknik Sipil'],
+        kapasitas: 2
+      },
+      {
+        id: 4,
+        nama: 'Pabrik Elektronik',
+        jurusanDiterima: ['Teknik Elektro', 'Teknik Industri'],
+        kapasitas: 2
+      },
+      {
+        id: 5,
+        nama: 'Startup Kreatif',
+        jurusanDiterima: ['Informatika'],
+        kapasitas: 1
+      },
+    ]
+
+    setMahasiswaList(dummyMahasiswa)
+    setLokasiList(dummyLokasi)
+    setHasil(null)
+    setError('')
+  }
+
+  const handleProses = () => {
+    setError('')
+    try {
+      const solusi: Chromosome = geneticAlgorithm(mahasiswaList, lokasiList)
+      const hasilPenempatan = mahasiswaList.map((mhs, idx) => {
+        const lokasiTerpilih = lokasiList.find(l => l.id === solusi[idx])
+        return {
+          nama: mhs.nama,
+          lokasi: lokasiTerpilih ? lokasiTerpilih.nama : 'Tidak ditemukan',
+        }
+      })
+      setHasil(hasilPenempatan)
+    } catch {
+      setError('Terjadi kesalahan saat memproses penempatan.')
+      setHasil(null)
+    }
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+      <main className="min-h-screen p-6 bg-gray-50 text-gray-800">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <h1 className="text-3xl font-bold text-center">TITIK PKN</h1>
+          <p className="text-center">{"Penempatan lokasi penelitian atau magang untuk PKN mahasiswa menggunakan algoritma genetika.".toUpperCase()}</p>
+          {/* Tombol Auto Isi Dummy */}
+          <div className="text-center">
+            <button
+                onClick={autoIsiDummy}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full mb-4"
+            >
+              Auto Isi Dummy Data
+            </button>
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Form Mahasiswa */}
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-xl font-semibold mb-2">Tambah Mahasiswa</h2>
+            <div className="flex flex-col md:flex-row gap-2 mb-3">
+              <input type="text" value={namaMhs} onChange={e => setNamaMhs(e.target.value)} placeholder="Nama"
+                     className="border p-2 rounded w-full" />
+              <input type="text" value={jurusanMhs} onChange={e => setJurusanMhs(e.target.value)} placeholder="Jurusan"
+                     className="border p-2 rounded w-full" />
+              <button onClick={tambahMahasiswa}
+                      className="bg-blue-600 text-white px-4 rounded hover:bg-blue-700">Tambah</button>
+            </div>
+            <table className="w-full text-sm border">
+              <thead className="bg-gray-100">
+              <tr><th className="border p-2">Nama</th><th className="border p-2">Jurusan</th></tr>
+              </thead>
+              <tbody>
+              {mahasiswaList.map((m, i) => (
+                  <tr key={i}><td className="border p-2">{m.nama}</td><td className="border p-2">{m.jurusan}</td></tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Form Lokasi */}
+          <div className="bg-white p-4 rounded shadow">
+            <h2 className="text-xl font-semibold mb-2">Tambah Lokasi</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3">
+              <input type="text" value={namaLokasi} onChange={e => setNamaLokasi(e.target.value)} placeholder="Nama Lokasi"
+                     className="border p-2 rounded" />
+              <input type="text" value={jurusanDiterima} onChange={e => setJurusanDiterima(e.target.value)}
+                     placeholder="Jurusan Diterima (pisah koma)" className="border p-2 rounded" />
+              <input type="number" value={kapasitas} onChange={e => setKapasitas(e.target.value)} placeholder="Kapasitas"
+                     className="border p-2 rounded" />
+              <button onClick={tambahLokasi} className="bg-green-600 text-white px-4 rounded hover:bg-green-700">Tambah</button>
+            </div>
+            <table className="w-full text-sm border">
+              <thead className="bg-gray-100">
+              <tr>
+                <th className="border p-2">ID</th>
+                <th className="border p-2">Nama</th>
+                <th className="border p-2">Jurusan Diterima</th>
+                <th className="border p-2">Kapasitas</th>
+              </tr>
+              </thead>
+              <tbody>
+              {lokasiList.map((l, i) => (
+                  <tr key={i}>
+                    <td className="border p-2">{l.id}</td>
+                    <td className="border p-2">{l.nama}</td>
+                    <td className="border p-2">{l.jurusanDiterima.join(', ')}</td>
+                    <td className="border p-2">{l.kapasitas}</td>
+                  </tr>
+              ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Tombol proses dan hasil */}
+          <div className="text-center">
+            <button onClick={handleProses} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-full">
+              Jalankan Penempatan
+            </button>
+            {error && <p className="text-red-600 mt-2">{error}</p>}
+          </div>
+
+          {hasil && (
+              <div className="bg-white p-4 rounded shadow">
+                <h2 className="text-xl font-semibold mb-4">Hasil Penempatan</h2>
+                <table className="w-full text-sm border">
+                  <thead className="bg-gray-100">
+                  <tr><th className="border p-2">Mahasiswa</th><th className="border p-2">Lokasi</th></tr>
+                  </thead>
+                  <tbody>
+                  {hasil.map((h, i) => (
+                      <tr key={i}><td className="border p-2">{h.nama}</td><td className="border p-2">{h.lokasi}</td></tr>
+                  ))}
+                  </tbody>
+                </table>
+              </div>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  )
 }
