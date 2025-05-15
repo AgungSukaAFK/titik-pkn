@@ -112,6 +112,10 @@ export function geneticAlgorithm(
 ): Chromosome {
   let populasi = generatePopulasiAwal(mahasiswa, lokasi, populasiSize)
 
+  let solusiTerbaik: Chromosome | null = null
+  let fitnessTerbaik = -Infinity
+  let generasiTerbaik = -1
+
   for (let gen = 0; gen < jumlahGenerasi; gen++) {
     // Hitung semua fitness
     const fitnessList = populasi.map((chrom) => ({
@@ -123,6 +127,13 @@ export function geneticAlgorithm(
     const elite = fitnessList
         .sort((a, b) => b.fitness - a.fitness)
         .slice(0, 20)
+
+    // Cek apakah solusi ini lebih baik
+    if (elite[0].fitness > fitnessTerbaik) {
+      solusiTerbaik = elite[0].chrom
+      fitnessTerbaik = elite[0].fitness
+      generasiTerbaik = gen + 1
+    }
 
     // Logging progress generasi
     console.log(`\n🌀 Generasi ${gen + 1}`)
@@ -144,32 +155,32 @@ export function geneticAlgorithm(
     populasi = anakBaru
   }
 
-  // Ambil solusi terbaik setelah selesai
-  const solusiAkhir = seleksi(populasi, mahasiswa, lokasi, 1)[0]
-  console.log("\n✅ Selesai. Solusi terbaik:")
-  console.log(`[${solusiAkhir.join(", ")}]`)
+  console.log(`\n✅ Selesai. Solusi terbaik ditemukan di generasi ${generasiTerbaik} dengan fitness ${fitnessTerbaik}`)
+  console.log(`[${solusiTerbaik!.join(", ")}]`)
 
-  return solusiAkhir
+  return solusiTerbaik!
 }
+
 
 
 
 // --- Untuk simulasi aja ---
 // --- Dummy Data ---
-const mahasiswa: Mahasiswa[] = Array.from({ length: 20 }, (_, i) => ({
+const mahasiswa: Mahasiswa[] = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   nama: `Mahasiswa ${i + 1}`,
   jurusan: i % 2 === 0 ? "Informatika" : "Akuntansi",
 }))
 
 const lokasi: Lokasi[] = [
-  { id: 1, nama: "PT A", kapasitas: 10, jurusanDiterima: ["Informatika"] },
-  { id: 2, nama: "PT B", kapasitas: 10, jurusanDiterima: ["Akuntansi"] },
-  { id: 3, nama: "PT C", kapasitas: 10, jurusanDiterima: ["Informatika", "Akuntansi"] },
+  { id: 1, nama: "PT A", kapasitas: 5, jurusanDiterima: ["Informatika"] },
+  { id: 2, nama: "PT B", kapasitas: 5, jurusanDiterima: ["Akuntansi"] },
 ]
 
 // --- Jalankan ---
-const solusi = geneticAlgorithm(mahasiswa, lokasi, 100, 50)
+const ukuranPopulasi = 5;
+const jumlahGenerasi = 10;
+const solusi = geneticAlgorithm(mahasiswa, lokasi, jumlahGenerasi, ukuranPopulasi)
 
 console.log("Solusi terbaik:")
 solusi.forEach((lokasiId, idx) => {
