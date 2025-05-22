@@ -1,9 +1,12 @@
 # **Dokumentasi Proyek Titik-PKN**
 
 Dibuat oleh
+
+1. Achmad Aminudin
 1. Muhamad Agung Maulana
-2. Ilham Syaputra
-3. M. Gatan Anugrah
+1. M. Affandi Khoriri
+1. Ilham Syaputra
+1. M. Gatan Anugrah
 
 ## **1. Deskripsi Proyek**
 
@@ -11,36 +14,36 @@ Dibuat oleh
 
 ## **2. Tujuan Proyek**
 
-* Mengoptimalkan penempatan mahasiswa ke lokasi KKN atau magang berdasarkan kecocokan jurusan dan kapasitas lokasi.
-* Menggunakan algoritma genetika untuk mencari solusi terbaik dalam penempatan mahasiswa.
-* Memberikan hasil penempatan yang adil dan efisien, memperhitungkan kapasitas lokasi dan jurusan yang diterima.
+- Mengoptimalkan penempatan mahasiswa ke lokasi KKN atau magang berdasarkan kecocokan jurusan dan kapasitas lokasi.
+- Menggunakan algoritma genetika untuk mencari solusi terbaik dalam penempatan mahasiswa.
+- Memberikan hasil penempatan yang adil dan efisien, memperhitungkan kapasitas lokasi dan jurusan yang diterima.
 
 ## **3. Teknologi yang Digunakan**
 
-* **TypeScript**: Bahasa pemrograman utama untuk aplikasi ini.
-* **Next.js**: Framework untuk membangun aplikasi web.
-* **React**: Library untuk membangun antarmuka pengguna.
-* **Algoritma Genetika**: Digunakan untuk melakukan optimasi penempatan mahasiswa ke lokasi.
+- **TypeScript**: Bahasa pemrograman utama untuk aplikasi ini.
+- **Next.js**: Framework untuk membangun aplikasi web.
+- **React**: Library untuk membangun antarmuka pengguna.
+- **Algoritma Genetika**: Digunakan untuk melakukan optimasi penempatan mahasiswa ke lokasi.
 
 ## **4. Fitur Utama**
 
 1. **Penempatan Mahasiswa**:
 
-    * Menempatkan mahasiswa ke lokasi KKN atau magang berdasarkan jurusan mereka.
-    * Menghindari pelanggaran kapasitas pada lokasi.
-    * Menghitung nilai fitness untuk setiap penempatan menggunakan algoritma genetika.
+   - Menempatkan mahasiswa ke lokasi KKN atau magang berdasarkan jurusan mereka.
+   - Menghindari pelanggaran kapasitas pada lokasi.
+   - Menghitung nilai fitness untuk setiap penempatan menggunakan algoritma genetika.
 
 2. **Algoritma Genetika**:
 
-    * **Inisialisasi Populasi**: Membuat populasi awal berupa penempatan acak mahasiswa ke lokasi.
-    * **Fitness Evaluation**: Menilai kualitas penempatan berdasarkan kesesuaian jurusan dan kapasitas lokasi.
-    * **Seleksi**: Memilih individu terbaik (penempatan terbaik) untuk melanjutkan ke generasi berikutnya.
-    * **Crossover**: Menggabungkan dua penempatan untuk menciptakan penempatan baru.
-    * **Mutasi**: Memperkenalkan variasi dalam penempatan untuk menjaga keragaman solusi.
+   - **Inisialisasi Populasi**: Membuat populasi awal berupa penempatan acak mahasiswa ke lokasi.
+   - **Fitness Evaluation**: Menilai kualitas penempatan berdasarkan kesesuaian jurusan dan kapasitas lokasi.
+   - **Seleksi**: Memilih individu terbaik (penempatan terbaik) untuk melanjutkan ke generasi berikutnya.
+   - **Crossover**: Menggabungkan dua penempatan untuk menciptakan penempatan baru.
+   - **Mutasi**: Memperkenalkan variasi dalam penempatan untuk menjaga keragaman solusi.
 
 3. **Hasil Penempatan**:
 
-    * Menampilkan solusi terbaik setelah beberapa generasi dengan penempatan mahasiswa yang optimal.
+   - Menampilkan solusi terbaik setelah beberapa generasi dengan penempatan mahasiswa yang optimal.
 
 ## **5. Alur Proses Algoritma Genetika**
 
@@ -81,54 +84,54 @@ Penempatan terbaik mahasiswa ke lokasi KKN/magang ditampilkan dalam format yang 
 
 ## **6. Struktur Data**
 
-* **Mahasiswa**:
+- **Mahasiswa**:
 
-    * `id`: ID unik mahasiswa
-    * `nama`: Nama mahasiswa
-    * `jurusan`: Jurusan mahasiswa (misal: Informatika, Akuntansi)
+  - `id`: ID unik mahasiswa
+  - `nama`: Nama mahasiswa
+  - `jurusan`: Jurusan mahasiswa (misal: Informatika, Akuntansi)
 
-* **Lokasi**:
+- **Lokasi**:
 
-    * `id`: ID unik lokasi
-    * `nama`: Nama lokasi
-    * `kapasitas`: Jumlah kapasitas lokasi
-    * `jurusanDiterima`: Daftar jurusan yang diterima oleh lokasi tersebut
+  - `id`: ID unik lokasi
+  - `nama`: Nama lokasi
+  - `kapasitas`: Jumlah kapasitas lokasi
+  - `jurusanDiterima`: Daftar jurusan yang diterima oleh lokasi tersebut
 
-* **Chromosome**:
+- **Chromosome**:
 
-    * Sebuah array yang mewakili penempatan mahasiswa ke lokasi. Setiap elemen dalam array adalah ID lokasi yang dipilih untuk mahasiswa.
+  - Sebuah array yang mewakili penempatan mahasiswa ke lokasi. Setiap elemen dalam array adalah ID lokasi yang dipilih untuk mahasiswa.
 
 ## **7. Pseudo Code Proses Algoritma Genetika**
 
 ```ts
 // Inisialisasi populasi
-generatePopulasiAwal(mahasiswa, lokasi, jumlahPopulasi)
+generatePopulasiAwal(mahasiswa, lokasi, jumlahPopulasi);
 
 // Evaluasi fitness setiap kromosom dalam populasi
-hitungFitness(chromosom, mahasiswa, lokasiList)
+hitungFitness(chromosom, mahasiswa, lokasiList);
 
 // Seleksi elitisme untuk memilih individu terbaik
-seleksi(populasi, mahasiswa, lokasiList, jumlahIndividu)
+seleksi(populasi, mahasiswa, lokasiList, jumlahIndividu);
 
 // Crossover untuk menghasilkan anak baru
-crossover(parent1, parent2)
+crossover(parent1, parent2);
 
 // Mutasi untuk memperkenalkan variasi
-mutasi(chromosom, lokasiList, tingkatMutasi)
+mutasi(chromosom, lokasiList, tingkatMutasi);
 
 // Proses ini diulang selama beberapa generasi
 for (let generasi = 0; generasi < jumlahGenerasi; generasi++) {
-  const elite = seleksi(populasi, mahasiswa, lokasiList, 20)
-  const anakBaru = []
+  const elite = seleksi(populasi, mahasiswa, lokasiList, 20);
+  const anakBaru = [];
   while (anakBaru.length < populasiSize) {
-    const [p1, p2] = [randomPick(elite), randomPick(elite)]
-    anakBaru.push(mutasi(crossover(p1, p2), lokasi))
+    const [p1, p2] = [randomPick(elite), randomPick(elite)];
+    anakBaru.push(mutasi(crossover(p1, p2), lokasi));
   }
-  populasi = anakBaru
+  populasi = anakBaru;
 }
 
 // Seleksi solusi terbaik di akhir
-const solusiTerbaik = seleksi(populasi, mahasiswa, lokasi, 1)[0]
+const solusiTerbaik = seleksi(populasi, mahasiswa, lokasi, 1)[0];
 ```
 
 ## **8. Hasil Akhir**
@@ -148,7 +151,9 @@ Mahasiswa 3 (Informatika) → PT C
 Aplikasi ini dapat digunakan oleh universitas, institusi pendidikan, atau perusahaan yang memiliki program KKN/magang dan perlu melakukan penempatan mahasiswa ke lokasi yang tersedia. Algoritma genetika memungkinkan penempatan yang efisien dan adil, memaksimalkan kecocokan antara mahasiswa dan lokasi.
 
 ## **10. Referensi**
+
 // jurnal
-* [Algoritma Genetika](https://en.wikipedia.org/wiki/Genetic_algorithm)
-* [Next.js Documentation](https://nextjs.org/docs)
-* [React Documentation](https://reactjs.org/docs/getting-started.html)
+
+- [Algoritma Genetika](https://en.wikipedia.org/wiki/Genetic_algorithm)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://reactjs.org/docs/getting-started.html)

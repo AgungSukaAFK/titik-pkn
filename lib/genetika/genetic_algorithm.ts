@@ -47,16 +47,16 @@ function hitungFitness(chrom: Chromosome, mahasiswa: Mahasiswa[], lokasiList: Lo
 }
 
 // --- Seleksi (Elitisme) ---
-function seleksi(populasi: Chromosome[], mahasiswa: Mahasiswa[], lokasiList: Lokasi[], jumlah = 10): Chromosome[] {
-  return [...populasi]
-      .map((chrom) => ({
-        chrom,
-        fitness: hitungFitness(chrom, mahasiswa, lokasiList),
-      }))
+function seleksiElit(
+    fitnessList: { chrom: Chromosome; fitness: number }[],
+    jumlah: number = 20
+): { chrom: Chromosome; fitness: number }[] {
+  return fitnessList
+      .slice() // supaya tidak mengubah array asli
       .sort((a, b) => b.fitness - a.fitness)
       .slice(0, jumlah)
-      .map((x) => x.chrom)
 }
+
 
 // --- Crossover (Uniform) ---
 function crossover(parent1: Chromosome, parent2: Chromosome): Chromosome {
@@ -80,30 +80,6 @@ function randomPick<T>(arr: T[]): T {
 }
 
 // --- Main Function ---
-// export function geneticAlgorithm(
-//     mahasiswa: Mahasiswa[],
-//     lokasi: Lokasi[],
-//     jumlahGenerasi = 100,
-//     populasiSize = 100
-// ): Chromosome {
-//   let populasi = generatePopulasiAwal(mahasiswa, lokasi, populasiSize)
-//
-//   for (let i = 0; i < jumlahGenerasi; i++) {
-//     const elite = seleksi(populasi, mahasiswa, lokasi, 20)
-//
-//     const anakBaru: Chromosome[] = []
-//     while (anakBaru.length < populasiSize) {
-//       const [p1, p2] = [randomPick(elite), randomPick(elite)]
-//       const anak = mutasi(crossover(p1, p2), lokasi)
-//       anakBaru.push(anak)
-//     }
-//
-//     populasi = anakBaru
-//   }
-//
-//   return seleksi(populasi, mahasiswa, lokasi, 1)[0]
-// }
-
 export function geneticAlgorithm(
     mahasiswa: Mahasiswa[],
     lokasi: Lokasi[],
@@ -111,7 +87,7 @@ export function geneticAlgorithm(
     populasiSize = 100
 ): Chromosome {
   let populasi = generatePopulasiAwal(mahasiswa, lokasi, populasiSize)
-
+    const seleksiElitSize = 20
   let solusiTerbaik: Chromosome | null = null
   let fitnessTerbaik = -Infinity
   let generasiTerbaik = -1
@@ -123,10 +99,9 @@ export function geneticAlgorithm(
       fitness: hitungFitness(chrom, mahasiswa, lokasi),
     }))
 
-    // Ambil elit
-    const elite = fitnessList
-        .sort((a, b) => b.fitness - a.fitness)
-        .slice(0, 20)
+    // Seleksi / memilih calon orang tua
+    const elite = seleksiElit(fitnessList, seleksiElitSize)
+
 
     // Cek apakah solusi ini lebih baik
     if (elite[0].fitness > fitnessTerbaik) {
@@ -166,15 +141,20 @@ export function geneticAlgorithm(
 
 // --- Untuk simulasi aja ---
 // --- Dummy Data ---
-const mahasiswa: Mahasiswa[] = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  nama: `Mahasiswa ${i + 1}`,
-  jurusan: i % 2 === 0 ? "Informatika" : "Akuntansi",
-}))
+// const mahasiswa: Mahasiswa[] = Array.from({ length: 10 }, (_, i) => ({
+//   id: i + 1,
+//   nama: `Mahasiswa ${i + 1}`,
+//   jurusan: i % 2 === 0 ? "Informatika" : "Akuntansi",
+// }))
+const mahasiswa: Mahasiswa[] = [
+  {nama: "A", jurusan: "Informatika"},
+  {nama: "B", jurusan: "Informatika"},
+  {nama: "C", jurusan: "Akuntansi"},
+]
 
 const lokasi: Lokasi[] = [
-  { id: 1, nama: "PT A", kapasitas: 5, jurusanDiterima: ["Informatika"] },
-  { id: 2, nama: "PT B", kapasitas: 5, jurusanDiterima: ["Akuntansi"] },
+  { id: 1, nama: "PT X", kapasitas: 2, jurusanDiterima: ["Informatika"] },
+  { id: 2, nama: "PT Y", kapasitas: 1, jurusanDiterima: ["Akuntansi"] },
 ]
 
 // --- Jalankan ---
